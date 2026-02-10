@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>For You ❤️</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Base tokens */
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --glass: rgba(255,255,255,0.08);
+      --stroke: rgba(255,255,255,0.14);
+      --shadow: 0 30px 100px rgba(0,0,0,0.55);
+      --shadow2: 0 18px 60px rgba(0,0,0,0.35);
+      --radius: 22px;
+
+      /* Default Style = A Soft Elegant (Classy) */
+      --bgA:#07050a;
+      --bgB:#220824;
+      --hot:#ff2d83;
+      --hot2:#ff7aa8;
+      --gold:#ffd37a;
+
+      --fontTitle: "Playfair Display", serif;
+      --fontBody: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --glowOpacity: 0.22;
+      --grainOpacity: 0.22;
+      --bokehOpacity: 0.22;
+    }
+
+    /* Style A: Soft Elegant (Classy) */
+    [data-style="A"]{
+      --bgA:#07050a; --bgB:#220824;
+      --hot:#ff2d83; --hot2:#ff7aa8; --gold:#ffd37a;
+      --glowOpacity: 0.20; --grainOpacity: 0.20; --bokehOpacity: 0.22;
+    }
+
+    /* Style B: Neon Luxury (Premium club vibe) */
+    [data-style="B"]{
+      --bgA:#02020a; --bgB:#070a1f;
+      --hot:#00f5ff; --hot2:#b026ff; --gold:#00ff9a;
+      --glowOpacity: 0.30; --grainOpacity: 0.18; --bokehOpacity: 0.28;
+    }
+
+    /* Style C: Royal Cinematic (Movie feel) */
+    [data-style="C"]{
+      --bgA:#05040b; --bgB:#1a1036;
+      --hot:#a855f7; --hot2:#ff5fd2; --gold:#ffd37a;
+      --glowOpacity: 0.26; --grainOpacity: 0.24; --bokehOpacity: 0.26;
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: var(--fontBody);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 650px at 18% 12%, color-mix(in srgb, var(--hot) calc(var(--glowOpacity)*100%), transparent), transparent 62%),
+        radial-gradient(900px 520px at 78% 18%, color-mix(in srgb, var(--hot2) calc(var(--glowOpacity)*90%), transparent), transparent 60%),
+        radial-gradient(1100px 620px at 70% 78%, color-mix(in srgb, var(--gold) calc(var(--glowOpacity)*75%), transparent), transparent 62%),
+        linear-gradient(135deg, var(--bgA), var(--bgB));
+      min-height:100vh;
+      overflow-x:hidden;
+      transition: background 900ms ease;
+    }
+
+    /* IMPORTANT: lock background when drawer opens (fix scroll issues) */
+    body.lock-scroll{
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    /* Film grain overlay */
+    .grain{
+      position:fixed; inset:-50px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity: var(--grainOpacity);
+      pointer-events:none;
+      z-index:-1;
+      animation: grain 8s steps(10) infinite;
+    }
+    @keyframes grain{
+      0%,100%{ transform:translate(0,0) }
+      10%{ transform:translate(-2%, -3%) }
+      20%{ transform:translate(-4%, 1%) }
+      30%{ transform:translate(3%, -2%) }
+      40%{ transform:translate(1%, 4%) }
+      50%{ transform:translate(-3%, 2%) }
+      60%{ transform:translate(4%, 0%) }
+      70%{ transform:translate(2%, -4%) }
+      80%{ transform:translate(-1%, 3%) }
+      90%{ transform:translate(3%, 2%) }
+    }
+
+    /* Bokeh blobs */
+    .blob{
+      position:fixed;
+      width:520px; height:520px;
+      border-radius:999px;
+      filter: blur(52px);
+      opacity: var(--bokehOpacity);
+      z-index:-2;
+      pointer-events:none;
+      animation: float 12s ease-in-out infinite;
+      transition: opacity 600ms ease;
+    }
+    .blob.b1{ left:-160px; top:-120px; background: radial-gradient(circle at 30% 30%, var(--hot), transparent 60%); }
+    .blob.b2{ right:-180px; top:80px; background: radial-gradient(circle at 30% 30%, var(--hot2), transparent 60%); animation-delay:-4s; }
+    .blob.b3{ left:20%; bottom:-220px; background: radial-gradient(circle at 30% 30%, var(--gold), transparent 60%); animation-delay:-7s; }
+    @keyframes float{
+      0%,100%{ transform: translateY(0) translateX(0) scale(1); }
+      50%{ transform: translateY(-18px) translateX(10px) scale(1.03); }
+    }
+
+    .wrap{ max-width: 1100px; margin: 0 auto; padding: 18px 16px 90px; }
+
+    .topbar{
+      position: sticky; top: 14px; z-index: 50;
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding: 12px 12px;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.34);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow2);
+    }
+    .brand{ display:flex; gap:10px; align-items:center; min-width:200px; }
+    .mark{
+      width: 40px; height: 40px;
+      border-radius: 14px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, var(--hot), var(--hot2));
+      box-shadow: 0 18px 45px color-mix(in srgb, var(--hot) 35%, transparent);
+      font-weight:800;
+      color:white;
+    }
+    .brand b{ font-size: 13px; display:block; }
+    .brand span{ font-size: 11px; color: var(--muted); display:block; }
+
+    .btns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    button{
+      border:none; cursor:pointer;
+      border-radius:999px;
+      padding: 10px 14px;
+      color:white; font-weight:600;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(12px);
+      transition: transform .18s ease, filter .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:hover{ transform: translateY(-1px); filter: brightness(1.08); }
+    button:active{ transform: translateY(0) scale(0.98); }
+    .hot{ background: linear-gradient(135deg, var(--hot), var(--hot2)); border:none; }
+    .dark{ background: rgba(0,0,0,0.35); }
+    .tiny{ padding: 8px 12px; font-size: 12px; }
+
+    .hero{ padding: 34px 10px 16px; text-align:center; }
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 9px 12px; border-radius:999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(14px);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    h1{
+      margin: 16px 0 8px;
+      font-family: var(--fontTitle);
+      font-weight: 700;
+      letter-spacing:-0.02em;
+      font-size: clamp(2.3rem, 4.8vw, 3.8rem);
+      line-height: 1.08;
+      text-shadow: 0 0 34px color-mix(in srgb, var(--hot2) 38%, transparent);
+    }
+    .lead{
+      max-width: 820px;
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .heroCard{
+      margin: 18px auto 0;
+      width: min(1000px, 100%);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display:grid; grid-template-columns: 1.15fr 0.85fr; gap: 14px;
+      align-items:stretch;
+    }
+    @media (max-width: 900px){ .heroCard{ grid-template-columns: 1fr; } }
+
+    .leftPanel{
+      border-radius: 18px;
+      background: rgba(0,0,0,0.26);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 16px 14px;
+      position:relative; overflow:hidden;
+    }
+    .leftPanel:before{
+      content:""; position:absolute; inset:-2px;
+      background: radial-gradient(700px 260px at 20% 10%, color-mix(in srgb, var(--hot) 18%, transparent), transparent 62%),
+                  radial-gradient(700px 260px at 80% 20%, color-mix(in srgb, var(--hot2) 16%, transparent), transparent 62%);
+      opacity:.8; pointer-events:none;
+    }
+    .leftPanel > *{ position:relative; z-index:1; }
+
+    .names{ display:flex; gap:10px; flex-wrap:wrap; align-items:baseline; justify-content:center; margin-bottom: 6px; }
+    .names .n{ font-family: var(--fontTitle); font-weight:700; font-size: 22px; }
+    .names .heart{ color: color-mix(in srgb, var(--hot2) 70%, white); font-size: 18px; }
+
+    .type{
+      font-size: 14px; color: rgba(255,255,255,0.88);
+      line-height:1.75; min-height: 56px;
+      margin: 10px 0 10px;
+    }
+
+    .pillRow{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top: 10px; }
+    .pill{
+      padding: 8px 10px; border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.80);
+      font-size: 12px;
+    }
+
+    .miniRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top: 10px; }
+
+    .meter{
+      height: 12px; border-radius:999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
+      overflow:hidden;
+      margin-top: 12px;
+    }
+    .fill{
+      height:100%; width: 0%;
+      border-radius:999px;
+      background: linear-gradient(90deg, var(--hot2), var(--hot), var(--gold));
+      transition: width 900ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    .rightPanel{
+      border-radius: 18px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.25);
+      position:relative;
+    }
+    .photo{
+      width:100%; height:100%;
+      min-height: 260px;
+      object-fit: cover;
+      display:block;
+      filter:saturate(1.05) contrast(1.05);
+      transform: scale(1.02);
+    }
+    .photoShade{
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.55)),
+        radial-gradient(600px 260px at 50% 25%, rgba(255,255,255,0.10), transparent 62%);
+      pointer-events:none;
+    }
+    .caption{
+      position:absolute; left:14px; bottom:12px; right:14px;
+      display:flex; justify-content:space-between; align-items:flex-end; gap:10px;
+      color: rgba(255,255,255,0.88);
+      font-size: 12px;
+    }
+    .caption b{ font-family: var(--fontTitle); font-size: 15px; letter-spacing:-0.01em; }
+    .caption span{ color: rgba(255,255,255,0.72); }
+
+    .section{
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow2);
+    }
+    .section h2{
+      margin: 2px 0 10px;
+      font-family: var(--fontTitle);
+      letter-spacing:-0.01em;
+      font-size: 22px;
+    }
+
+    /* Stories row */
+    .stories{
+      display:flex;
+      gap: 12px;
+      overflow-x:auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .stories::-webkit-scrollbar{ height: 8px; }
+    .stories::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.14); border-radius: 999px; }
+
+    .story{
+      flex: 0 0 min(360px, 86vw);
+      scroll-snap-align: center;
+      border-radius: 22px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
+      overflow:hidden;
+      position:relative;
+      min-height: 420px;
+      box-shadow: var(--shadow2);
+      cursor: pointer;
+    }
+    /* Premium border glow */
+    .story::before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius: 22px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), color-mix(in srgb, var(--hot) 30%, transparent), color-mix(in srgb, var(--gold) 22%, transparent));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events:none;
+      opacity: 0.9;
+    }
+    .story .img{
+      height: 56%;
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1.06) contrast(1.05);
+      transform: scale(1.02);
+    }
+    .story .shade{
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.08) 25%, rgba(0,0,0,0.82) 94%),
+        radial-gradient(600px 260px at 50% 20%, rgba(255,255,255,0.10), transparent 62%);
+      pointer-events:none;
+    }
+    .story .content{
+      position:absolute; left:14px; right:14px; bottom:14px;
+      z-index:2;
+    }
+    .story .badge{
+      display:inline-flex; gap:8px; align-items:center;
+      padding: 7px 10px; border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.14);
+      font-size: 12px; color: rgba(255,255,255,0.82);
+      margin-bottom: 10px;
+    }
+    .story h3{
+      margin: 0 0 8px;
+      font-family: var(--fontTitle);
+      font-size: 22px;
+      letter-spacing:-0.01em;
+      line-height:1.2;
+    }
+    .story p{
+      margin:0;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    .shareRow{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+      margin-top: 12px;
+    }
+
+    /* Drawer (Customize) - FIXED FOR MOBILE SCROLL */
+    .drawer{
+      position: fixed; right: 14px; top: 74px;
+      width: min(460px, calc(100vw - 28px));
+      z-index: 80;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.50);
+      border: 1px solid rgba(255,255,255,0.16);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+
+      transform: translateY(-12px);
+      opacity:0;
+      pointer-events:none;
+      transition: all .22s ease;
+
+      /* critical */
+      max-height: calc(100vh - 110px);
+    }
+    .drawer.open{ opacity:1; transform: translateY(0); pointer-events:auto; }
+    .drawer header{
+      padding: 12px 14px;
+      display:flex; justify-content:space-between; align-items:center;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .drawer header b{ font-size: 13px; }
+    .drawer .content{
+      padding: 12px 14px 14px;
+      display:grid;
+      gap:10px;
+
+      /* critical */
+      max-height: calc(100vh - 170px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 18px;
+    }
+    .field label{ font-size: 11px; color: var(--muted); display:block; margin-bottom: 6px; }
+    .field input, .field textarea, .field select{
+      width:100%; padding: 10px 11px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: white; outline:none; font-family: inherit;
+    }
+    .field textarea{ min-height: 78px; resize: vertical; }
+    .hint{ font-size: 11px; color: rgba(255,255,255,0.70); line-height: 1.55; word-break: break-word; }
+
+    /* Modal */
+    .overlay{
+      position: fixed; inset:0;
+      display:none; align-items:center; justify-content:center;
+      padding: 18px; background: rgba(0,0,0,0.55);
+      z-index: 120;
+    }
+    .modal{
+      width: min(580px, 96vw);
+      border-radius: 18px;
+      background: rgba(10,6,16,0.86);
+      border: 1px solid rgba(255,255,255,0.16);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modal .head{
+      padding: 14px 16px;
+      display:flex; justify-content:space-between; align-items:center;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .modal .head b{ font-size: 14px; }
+    .modal .body{
+      padding: 16px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+    .modal .foot{
+      padding: 14px 16px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+    }
+
+    /* QR */
+    .qrBox{
+      display:grid;
+      gap: 10px;
+      place-items:center;
+      margin-top: 12px;
+    }
+    #qrcode{
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Fullscreen Story Viewer */
+    .storyViewer{
+      position: fixed;
+      inset:0;
+      display:none;
+      z-index: 200;
+      background: rgba(0,0,0,0.86);
+      backdrop-filter: blur(10px);
+    }
+    .storyFrame{
+      position: absolute;
+      inset: 0;
+      display:grid;
+      place-items:center;
+      padding: 18px;
+    }
+    .storyCard{
+      width: min(440px, 94vw);
+      height: min(740px, 88vh);
+      border-radius: 26px;
+      overflow:hidden;
+      position:relative;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+    }
+    .svImg{
+      position:absolute; inset:0;
+      background-size: cover;
+      background-position:center;
+      filter: saturate(1.08) contrast(1.05);
+      transform: scale(1.03);
+    }
+    .svShade{
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.22) 18%, rgba(0,0,0,0.84) 92%),
+        radial-gradient(720px 320px at 50% 18%, rgba(255,255,255,0.12), transparent 60%);
+      pointer-events:none;
+    }
+    .svTop{
+      position:absolute; left:12px; right:12px; top:12px;
+      z-index:3;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .progressRow{
+      display:flex; gap:6px;
+    }
+    .prog{
+      height: 3px;
+      flex:1;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      overflow:hidden;
+    }
+    .prog > i{
+      display:block;
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--hot2), var(--hot), var(--gold));
+    }
+    .svBar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .svWho{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color: rgba(255,255,255,0.85);
+      font-size: 12px;
+    }
+    .svDot{
+      width: 34px; height:34px;
+      border-radius: 13px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, var(--hot), var(--hot2));
+      font-weight:800;
+      box-shadow: 0 18px 45px color-mix(in srgb, var(--hot) 35%, transparent);
+    }
+    .svClose{
+      padding: 8px 12px;
+      font-size: 12px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      color: white;
+      cursor:pointer;
+    }
+    .svContent{
+      position:absolute;
+      left:16px; right:16px; bottom:16px;
+      z-index:3;
+    }
+    .svBadge{
+      display:inline-flex; gap:8px; align-items:center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.14);
+      font-size: 12px;
+      color: rgba(255,255,255,0.86);
+      margin-bottom: 10px;
+    }
+    .svTitle{
+      margin:0 0 10px;
+      font-family: var(--fontTitle);
+      font-size: 26px;
+      letter-spacing:-0.01em;
+      line-height: 1.1;
+    }
+    .svText{
+      margin:0;
+      color: rgba(255,255,255,0.80);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .tapZones{
+      position:absolute; inset:0;
+      z-index:4;
+      display:flex;
+    }
+    .tapLeft, .tapRight{
+      flex:1;
+    }
+
+    .footnote{
+      text-align:center;
+      margin-top: 16px;
+      color: rgba(255,255,255,0.60);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .grain{ animation:none; }
+      .blob{ animation:none; }
+      html{ scroll-behavior:auto; }
+    }
+  </style>
+</head>
+
+<body data-style="A">
+  <div class="grain"></div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="head">
+        <b id="mTitle">Message</b>
+        <button class="dark tiny" id="mClose">✕</button>
+      </div>
+      <div class="body" id="mBody"></div>
+      <div class="foot">
+        <button class="hot" id="mOk">Okay 💖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story Viewer -->
+  <div class="storyViewer" id="storyViewer" aria-hidden="true">
+    <div class="storyFrame">
+      <div class="storyCard" id="svCard">
+        <div class="svImg" id="svImg"></div>
+        <div class="svShade"></div>
+
+        <div class="svTop">
+          <div class="progressRow" id="svProgress"></div>
+          <div class="svBar">
+            <div class="svWho">
+              <div class="svDot">♡</div>
+              <div>
+                <div id="svWhoLine" style="font-weight:700;">For You</div>
+                <div id="svSubLine" style="opacity:.8;">A small page, a real feeling</div>
+              </div>
+            </div>
+            <button class="svClose" id="svClose">Close</button>
+          </div>
+        </div>
+
+        <div class="svContent">
+          <div class="svBadge" id="svBadge">✨ Today</div>
+          <h3 class="svTitle" id="svTitle">Title</h3>
+          <p class="svText" id="svText">Text</p>
+        </div>
+
+        <div class="tapZones">
+          <div class="tapLeft" id="tapLeft" title="Prev"></div>
+          <div class="tapRight" id="tapRight" title="Next"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer -->
+  <div class="drawer" id="drawer">
+    <header>
+      <b>Customize (No issues ✅)</b>
+      <button class="dark tiny" id="closeDrawer">Close</button>
+    </header>
+
+    <div class="content">
+      <div class="field">
+        <label>Your Name (from)</label>
+        <input id="fromInput" placeholder="e.g., Abdullah">
+      </div>
+
+      <div class="field">
+        <label>Partner Name (to)</label>
+        <input id="toInput" placeholder="e.g., Ayesha">
+      </div>
+
+      <div class="field">
+        <label>Relationship (12 options)</label>
+        <select id="relInput">
+          <option value="girlfriend">Girlfriend</option>
+          <option value="boyfriend">Boyfriend</option>
+          <option value="wife">Wife</option>
+          <option value="husband">Husband</option>
+          <option value="fiance">Fiancé</option>
+          <option value="fiancee">Fiancée</option>
+          <option value="partner">Partner</option>
+          <option value="soulmate">Soulmate</option>
+          <option value="crush">Crush</option>
+          <option value="bestfriend">Best Friend</option>
+          <option value="valentine">Valentine</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Which Day to Use?</label>
+        <select id="dayInput">
+          <option value="auto">Auto (Today)</option>
+          <option value="rose">Rose Day 🌹</option>
+          <option value="propose">Propose Day 💍</option>
+          <option value="chocolate">Chocolate Day 🍫</option>
+          <option value="teddy">Teddy Day 🧸</option>
+          <option value="promise">Promise Day 🤝</option>
+          <option value="hug">Hug Day 🤗</option>
+          <option value="kiss">Kiss Day 😘</option>
+          <option value="valentine">Valentine’s Day ❤️</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Style (A/B/C)</label>
+        <select id="styleInput">
+          <option value="A">A — Soft Elegant (Classy)</option>
+          <option value="B">B — Neon Luxury (Premium)</option>
+          <option value="C">C — Royal Cinematic (Movie)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Photo URL (shareable)</label>
+        <input id="photoInput" placeholder="https://...jpg">
+      </div>
+
+      <div class="field">
+        <label>OR Upload Photo (local preview only)</label>
+        <input id="photoFile" type="file" accept="image/*">
+      </div>
+
+      <div class="field">
+        <label>Song URL (optional) — paste MP3 link</label>
+        <input id="songInput" placeholder="https://...mp3">
+      </div>
+
+      <div class="field">
+        <label>Personal Note (optional)</label>
+        <textarea id="noteInput" placeholder="Write something personal..."></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="hot" id="applyBtn">Apply ✨</button>
+        <button id="genLinkBtn">Generate Link 🔗</button>
+        <button id="copyLinkBtn">Copy Link 📋</button>
+      </div>
+
+      <div class="hint" id="linkHint"></div>
+
+      <div class="hint">
+        WhatsApp share fix: same-tab open (no popup issues).<br>
+        Local upload photo share nahi hoti — share ke liye Photo URL use karein.
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="mark">♡</div>
+        <div>
+          <b id="brandTitle">Romantic Story Page</b>
+          <span id="brandSub">A/B/C styles • Stories • WhatsApp • QR • No issues</span>
+        </div>
+      </div>
+      <div class="btns">
+        <button class="dark" id="openDrawer">Customize</button>
+        <button class="dark" id="musicToggle">Play Music 🎵</button>
+        <button class="hot" id="openStories">Open Stories ▶</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="tag">✨ Premium • Realistic • Swipe Stories • Tap-to-View</div>
+      <h1 id="title">For You ❤️</h1>
+      <p class="lead" id="lead">
+        Choose relationship + day + style. Page will generate a refined romantic story automatically.
+      </p>
+
+      <div class="heroCard">
+        <div class="leftPanel">
+          <div class="names">
+            <div class="n" id="fromName">Your Name</div>
+            <div class="heart">♥</div>
+            <div class="n" id="toName">Your Love</div>
+          </div>
+
+          <div class="type" id="mainLine"></div>
+
+          <div class="pillRow">
+            <div class="pill" id="pillRel">Relationship: —</div>
+            <div class="pill" id="pillDay">Day: —</div>
+            <div class="pill" id="pillSong">Song: —</div>
+            <div class="pill" id="pillStyle">Style: —</div>
+          </div>
+
+          <div class="miniRow">
+            <button class="hot" id="sweetBtn">Surprise ✨</button>
+            <button class="dark" id="shareWaBtn">WhatsApp Share 💬</button>
+            <button class="dark" id="showQrBtn">QR Code 📷</button>
+          </div>
+
+          <div class="meter"><div class="fill" id="fill"></div></div>
+        </div>
+
+        <div class="rightPanel">
+          <img class="photo" id="photoEl"
+               src="https://images.unsplash.com/photo-1520975682031-ae1f7df1b1f8?auto=format&fit=crop&w=1600&q=80" alt="Photo">
+          <div class="photoShade"></div>
+          <div class="caption">
+            <div>
+              <b id="capTitle">A real feeling</b><br>
+              <span id="capSub">made visible</span>
+            </div>
+            <div style="text-align:right">
+              <span id="capDate">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="storiesSection">
+      <h2>Stories (Swipe like Instagram)</h2>
+      <div class="stories" id="stories"></div>
+
+      <div class="shareRow">
+        <button class="hot" id="shareBtn2">WhatsApp Share 💬</button>
+        <button class="dark" id="copyBtn2">Copy Link 📋</button>
+        <button class="dark" id="qrBtn2">QR Code 📷</button>
+      </div>
+
+      <div class="qrBox" id="qrArea" style="display:none;">
+        <div class="hint">Scan this QR to open the same page:</div>
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="footnote">
+        URL example: <span style="opacity:.8">?from=Ali&to=Sara&rel=wife&day=valentine&style=C&photo=URL&song=MP3</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- Audio -->
+  <audio id="bgMusic" loop>
+    <source id="songSource" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <!-- QR Code -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <script>
+    const $ = (s)=>document.querySelector(s);
+    const params = new URLSearchParams(location.search);
+    const STORAGE_KEY = "romantic_pro_final_v2";
+
+    const REL_LABEL = {
+      girlfriend:"Girlfriend", boyfriend:"Boyfriend", wife:"Wife", husband:"Husband",
+      fiance:"Fiancé", fiancee:"Fiancée", partner:"Partner", soulmate:"Soulmate",
+      crush:"Crush", bestfriend:"Best Friend", valentine:"Valentine", other:"Other"
+    };
+
+    const DAY = {
+      rose:      { label:"Rose Day 🌹",      vibe:"soft",    bg:"https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1600&q=80" },
+      propose:   { label:"Propose Day 💍",   vibe:"deep",    bg:"https://images.unsplash.com/photo-1529516544815-8f3293b1b5e3?auto=format&fit=crop&w=1600&q=80" },
+      chocolate: { label:"Chocolate Day 🍫", vibe:"sweet",   bg:"https://images.unsplash.com/photo-1511381939415-e44015466834?auto=format&fit=crop&w=1600&q=80" },
+      teddy:     { label:"Teddy Day 🧸",     vibe:"cute",    bg:"https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80" },
+      promise:   { label:"Promise Day 🤝",   vibe:"loyal",   bg:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80" },
+      hug:       { label:"Hug Day 🤗",       vibe:"warm",    bg:"https://images.unsplash.com/photo-1520975682031-ae1f7df1b1f8?auto=format&fit=crop&w=1600&q=80" },
+      kiss:      { label:"Kiss Day 😘",      vibe:"rom",     bg:"https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1600&q=80" },
+      valentine: { label:"Valentine’s Day ❤️", vibe:"classic", bg:"https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1600&q=80" },
+    };
+
+    function safe(v, fallback){
+      v = (v ?? "").toString().trim();
+      return v.length ? v : fallback;
+    }
+
+    function getAutoDay(){
+      const d = new Date();
+      const m = d.getMonth()+1;
+      const day = d.getDate();
+      if(m === 2){
+        if(day === 7) return "rose";
+        if(day === 8) return "propose";
+        if(day === 9) return "chocolate";
+        if(day === 10) return "teddy";
+        if(day === 11) return "promise";
+        if(day === 12) return "hug";
+        if(day === 13) return "kiss";
+        if(day === 14) return "valentine";
+      }
+      return "valentine";
+    }
+
+    function romanticLine(dayKey, relKey, from, to){
+      const base = {
+        girlfriend:  `${to}, you’re not just my girlfriend — you’re my calm, my comfort, and my favorite person.`,
+        boyfriend:   `${to}, you’re not just my boyfriend — you’re my safety, my pride, and my peace.`,
+        wife:        `${to}, my wife, you make our home feel warmer just by being in it.`,
+        husband:     `${to}, my husband, with you I feel protected, understood, and truly loved.`,
+        fiance:      `${to}, my fiancé, I’m grateful we’re building a future that feels real and beautiful.`,
+        fiancee:     `${to}, my fiancée, you’re my dream coming true in the most peaceful way.`,
+        partner:     `${to}, my partner, I don’t want perfect — I want real, and I want it with you.`,
+        soulmate:    `${to}, you feel like my soulmate — the kind of love that makes life softer.`,
+        crush:       `${to}, I don’t know how to say it perfectly… but you’ve been on my mind in the sweetest way.`,
+        bestfriend:  `${to}, you’re my best friend — and the way you understand me is rare.`,
+        valentine:   `${to}, will you be my Valentine — not for a day, but for a love that grows daily?`,
+        other:       `${to}, you mean more to me than I can explain — so I made this, just for you.`
+      }[relKey] || `${to}, you mean more to me than I can explain — so I made this, just for you.`;
+
+      const perDay = {
+        rose:      `Today is Rose Day. If I could, I’d place a rose in your hands and a smile on your face — gently, beautifully.`,
+        propose:   `Today is Propose Day. ${from} is asking with respect: can I be the one who stays loyal, calm, and real with you?`,
+        chocolate: `Today is Chocolate Day. Sweetness reminds me of you — not loud, just quietly unforgettable.`,
+        teddy:     `Today is Teddy Day. If you ever feel tired, I want to be the comfort you can lean on.`,
+        promise:   `Today is Promise Day. I promise: I’ll respect you, listen more, and never take you for granted.`,
+        hug:       `Today is Hug Day. If distance exists, consider this a warm hug — the kind that feels safe.`,
+        kiss:      `Today is Kiss Day. Just a soft reminder: you’re loved, desired, and cherished — always.`,
+        valentine: `Today is Valentine’s Day. I choose you — in small ways, in real ways, every day.`
+      }[dayKey] || `I choose you — in small ways, in real ways, every day.`;
+
+      return `${base} ${perDay}`;
+    }
+
+    function buildStories(dayKey, relKey, from, to, note){
+      const dayLabel = DAY[dayKey]?.label || "Today ❤️";
+      const relLabel = REL_LABEL[relKey] || "Someone Special";
+      const baseSlides = [
+        { badge: dayLabel, title: `${to}, this is for you`, text: `A small page… but a real feeling. From ${from}.` },
+        { badge: relLabel, title: `What I feel`, text: romanticLine(dayKey, relKey, from, to) },
+        { badge: `Promise`, title: `I’ll always`, text: `Respect you, protect your peace, and love you in a calm and honest way.` },
+        { badge: `Note`, title: `One more thing…`, text: note || `You make life feel lighter — and I’m grateful for you.` },
+      ];
+      if(dayKey === "propose" || dayKey === "valentine"){
+        baseSlides.push({ badge:`Question ❤️`, title:`Will you choose me?`, text:`Not for show… but for something real, loyal, and growing.` });
+      }
+      return baseSlides;
+    }
+
+    function modal(title, html){
+      $("#mTitle").textContent = title;
+      $("#mBody").innerHTML = html;
+      $("#overlay").style.display = "flex";
+    }
+    function closeModal(){ $("#overlay").style.display = "none"; }
+    $("#mClose").addEventListener("click", closeModal);
+    $("#mOk").addEventListener("click", closeModal);
+    $("#overlay").addEventListener("click", (e)=>{ if(e.target.id==="overlay") closeModal(); });
+
+    function load(){
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const dayParam = safe(params.get("day"), stored.dayRaw || "auto");
+      const resolvedDay = dayParam === "auto" ? getAutoDay() : (DAY[dayParam] ? dayParam : getAutoDay());
+      const styleParam = safe(params.get("style"), stored.style || "A");
+      const style = (styleParam === "A" || styleParam === "B" || styleParam === "C") ? styleParam : "A";
+
+      return {
+        from:  safe(params.get("from"), stored.from || "Your Name"),
+        to:    safe(params.get("to"), stored.to || "Your Love"),
+        rel:   safe(params.get("rel"), stored.rel || "girlfriend"),
+        day:   resolvedDay,
+        dayRaw: dayParam,
+        style,
+        photo: safe(params.get("photo"), stored.photo || $("#photoEl").src),
+        note:  safe(params.get("note"), stored.note || ""),
+        song:  safe(params.get("song"), stored.song || "")
+      };
+    }
+    function save(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+    function buildShareLink(s){
+      const base = location.origin + location.pathname;
+      const dayForLink = s.dayRaw === "auto" ? "auto" : s.day;
+      const q =
+        `from=${encodeURIComponent(s.from)}&to=${encodeURIComponent(s.to)}&rel=${encodeURIComponent(s.rel)}&day=${encodeURIComponent(dayForLink)}&style=${encodeURIComponent(s.style)}&photo=${encodeURIComponent(s.photo)}&note=${encodeURIComponent(s.note||"")}&song=${encodeURIComponent(s.song||"")}`;
+      return `${base}?${q}`;
+    }
+
+    // WhatsApp share: SAME TAB redirect (no popup issues)
+    function whatsappShare(link, s){
+      const dayLabel = DAY[s.day]?.label || "Today ❤️";
+      const msg =
+`💖 ${dayLabel}
+
+${s.to}, this is for you.
+— ${s.from}
+
+${romanticLine(s.day, s.rel, s.from, s.to)}
+
+Open: ${link}`;
+
+      const wa = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
+      window.location.href = wa;
+    }
+
+    // QR code
+    function renderQR(link){
+      const box = $("#qrcode");
+      box.innerHTML = "";
+      new QRCode(box, {
+        text: link,
+        width: 220,
+        height: 220,
+        colorDark: "#ffffff",
+        colorLight: "transparent",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    // Auto background transitions (subtle)
+    let bgPhase = 0;
+    function tickBg(){
+      bgPhase = (bgPhase + 1) % 3;
+      const b1 = document.querySelector(".blob.b1");
+      const b2 = document.querySelector(".blob.b2");
+      const b3 = document.querySelector(".blob.b3");
+      if(!b1||!b2||!b3) return;
+      if(bgPhase === 0){ b1.style.opacity="0.26"; b2.style.opacity="0.22"; b3.style.opacity="0.20"; }
+      if(bgPhase === 1){ b1.style.opacity="0.20"; b2.style.opacity="0.28"; b3.style.opacity="0.22"; }
+      if(bgPhase === 2){ b1.style.opacity="0.22"; b2.style.opacity="0.20"; b3.style.opacity="0.28"; }
+    }
+    setInterval(tickBg, 4500);
+
+    // Story Viewer logic
+    let svSlides = [];
+    let svIndex = 0;
+    let svTimer = null;
+    const STORY_MS = 5200;
+
+    function openStoryViewer(index){
+      svIndex = index;
+      $("#storyViewer").style.display = "block";
+      $("#storyViewer").setAttribute("aria-hidden", "false");
+      document.body.classList.add("lock-scroll");
+      renderStoryFrame(true);
+      startProgress();
+    }
+
+    function closeStoryViewer(){
+      $("#storyViewer").style.display = "none";
+      $("#storyViewer").setAttribute("aria-hidden", "true");
+      stopProgress();
+      document.body.classList.remove("lock-scroll");
+    }
+
+    function stopProgress(){
+      if(svTimer) clearInterval(svTimer);
+      svTimer = null;
+    }
+
+    function renderProgressBars(){
+      const row = $("#svProgress");
+      row.innerHTML = "";
+      for(let i=0;i<svSlides.length;i++){
+        const d = document.createElement("div");
+        d.className = "prog";
+        d.innerHTML = "<i></i>";
+        row.appendChild(d);
+      }
+    }
+
+    function renderStoryFrame(resetBar){
+      const s = svSlides[svIndex];
+      if(!s) return;
+
+      $("#svImg").style.backgroundImage = `url('${s.bg}')`;
+      $("#svBadge").textContent = `✨ ${s.badge}`;
+      $("#svTitle").textContent = s.title;
+      $("#svText").textContent = s.text;
+
+      // mark bars
+      const bars = Array.from($("#svProgress").querySelectorAll(".prog > i"));
+      bars.forEach((bar,i)=>{
+        if(i < svIndex) bar.style.width = "100%";
+        else if(i > svIndex) bar.style.width = "0%";
+        else if(resetBar) bar.style.width = "0%";
+      });
+    }
+
+    function startProgress(){
+      stopProgress();
+      renderProgressBars();
+      renderStoryFrame(true);
+
+      const bars = Array.from($("#svProgress").querySelectorAll(".prog > i"));
+      let t = 0;
+      svTimer = setInterval(()=>{
+        t += 60;
+        const pct = Math.min(100, (t / STORY_MS) * 100);
+        if(bars[svIndex]) bars[svIndex].style.width = pct + "%";
+        if(pct >= 100){
+          nextStory();
+        }
+      }, 60);
+    }
+
+    function nextStory(){
+      stopProgress();
+      svIndex++;
+      if(svIndex >= svSlides.length){
+        closeStoryViewer();
+        return;
+      }
+      renderStoryFrame(true);
+      startProgress();
+    }
+
+    function prevStory(){
+      stopProgress();
+      svIndex = Math.max(0, svIndex-1);
+      renderStoryFrame(true);
+      startProgress();
+    }
+
+    $("#svClose").addEventListener("click", closeStoryViewer);
+    $("#tapLeft").addEventListener("click", prevStory);
+    $("#tapRight").addEventListener("click", nextStory);
+
+    // State + apply
+    let state = load();
+    let shareLink = "";
+
+    function apply(s){
+      // style
+      document.body.setAttribute("data-style", s.style);
+
+      $("#title").textContent = `For ${s.to} ❤️`;
+      document.title = `For ${s.to} ❤️`;
+
+      $("#fromName").textContent = s.from;
+      $("#toName").textContent = s.to;
+
+      const now = new Date();
+      $("#capDate").textContent = now.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" });
+
+      // day background image (nice touch)
+      const dayBg = DAY[s.day]?.bg || s.photo;
+      $("#photoEl").src = s.photo || dayBg;
+
+      const line = romanticLine(s.day, s.rel, s.from, s.to);
+      $("#mainLine").textContent = line;
+
+      $("#pillRel").textContent = `Relationship: ${REL_LABEL[s.rel] || "—"}`;
+      $("#pillDay").textContent = `Day: ${DAY[s.day]?.label || "—"}`;
+      $("#pillStyle").textContent = `Style: ${s.style}`;
+      $("#pillSong").textContent = `Song: ${s.song ? "Custom URL" : "Optional"}`;
+
+      // audio
+      const music = $("#bgMusic");
+      const srcEl = $("#songSource");
+      if (s.song && s.song.startsWith("http")){
+        srcEl.src = s.song;
+        music.load();
+      }
+
+      // stories build + render
+      const slides = buildStories(s.day, s.rel, s.from, s.to, s.note);
+      const storiesEl = $("#stories");
+      storiesEl.innerHTML = "";
+
+      svSlides = slides.map(sl => ({
+        ...sl,
+        bg: DAY[s.day]?.bg || s.photo
+      }));
+
+      svSlides.forEach((sl, idx)=>{
+        const card = document.createElement("div");
+        card.className = "story";
+        card.innerHTML = `
+          <div class="img" style="background-image:url('${sl.bg}')"></div>
+          <div class="shade"></div>
+          <div class="content">
+            <div class="badge">✨ ${sl.badge}</div>
+            <h3>${sl.title}</h3>
+            <p>${sl.text}</p>
+          </div>
+        `;
+        card.addEventListener("click", ()=> openStoryViewer(idx));
+        storiesEl.appendChild(card);
+      });
+
+      // meter
+      $("#fill").style.width = "0%";
+      setTimeout(()=> $("#fill").style.width = "100%", 300);
+
+      // drawer values
+      $("#fromInput").value = s.from;
+      $("#toInput").value = s.to;
+      $("#relInput").value = s.rel;
+      $("#dayInput").value = s.dayRaw === "auto" ? "auto" : s.day;
+      $("#styleInput").value = s.style;
+      $("#photoInput").value = s.photo;
+      $("#noteInput").value = s.note || "";
+      $("#songInput").value = s.song || "";
+
+      shareLink = buildShareLink(s);
+      $("#linkHint").innerHTML = `<b>Share Link:</b><br>${shareLink}`;
+
+      // update story viewer header
+      $("#svWhoLine").textContent = `For ${s.to}`;
+      $("#svSubLine").textContent = `From ${s.from} • ${DAY[s.day]?.label || "Today"}`;
+
+      // if QR already visible, refresh
+      if ($("#qrArea").style.display !== "none"){
+        renderQR(shareLink);
+      }
+    }
+
+    apply(state);
+
+    // Drawer open/close with background lock (fix)
+    const drawer = $("#drawer");
+    $("#openDrawer").addEventListener("click", () => {
+      drawer.classList.add("open");
+      document.body.classList.add("lock-scroll");
+    });
+    $("#closeDrawer").addEventListener("click", () => {
+      drawer.classList.remove("open");
+      document.body.classList.remove("lock-scroll");
+    });
+
+    // Photo upload local preview
+    $("#photoFile").addEventListener("change", (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      $("#photoEl").src = url;
+      modal("Photo Updated ✅", "Local photo preview set. (Share ke liye Photo URL paste karein.)");
+    });
+
+    // Apply button
+    $("#applyBtn").addEventListener("click", ()=>{
+      const daySelected = safe($("#dayInput").value, "auto");
+      const resolvedDay = (daySelected === "auto") ? getAutoDay() : (DAY[daySelected] ? daySelected : getAutoDay());
+
+      const styleSelected = safe($("#styleInput").value, "A");
+      const style = (styleSelected==="A"||styleSelected==="B"||styleSelected==="C") ? styleSelected : "A";
+
+      state = {
+        from: safe($("#fromInput").value, "Your Name"),
+        to: safe($("#toInput").value, "Your Love"),
+        rel: safe($("#relInput").value, "girlfriend"),
+        day: resolvedDay,
+        dayRaw: daySelected,
+        style,
+        photo: safe($("#photoInput").value, $("#photoEl").src),
+        note: safe($("#noteInput").value, ""),
+        song: safe($("#songInput").value, "")
+      };
+
+      save(state);
+      apply(state);
+
+      confetti({ particleCount: 90, spread: 70, origin: { y: 0.7 } });
+      modal("Applied ✨", `Done! Now share it with <b>${state.to}</b> 😄❤️`);
+    });
+
+    // Link buttons
+    $("#genLinkBtn").addEventListener("click", ()=>{
+      modal("Your Share Link 🔗", `<div style="word-break:break-word; line-height:1.65">${shareLink}</div>`);
+    });
+    $("#copyLinkBtn").addEventListener("click", async ()=>{
+      try{
+        await navigator.clipboard.writeText(shareLink);
+        modal("Copied ✅", `Link copied! Send it to <b>${state.to}</b> 😄`);
+      }catch{
+        modal("Copy blocked", "Clipboard permission blocked. Open popup and copy manually.");
+      }
+    });
+
+    // Surprise button
+    const extraLines = [
+      "You don’t just look beautiful — you feel like peace.",
+      "With you, even simple moments feel special.",
+      "I like the version of me that exists around you.",
+      "You’re the calm I want at the end of every day.",
+      "I don’t need loud love — I need loyal love, with you.",
+      "If love had a signature, yours would be written on my heart.",
+      "You make the world feel softer, just by existing."
+    ];
+    $("#sweetBtn").addEventListener("click", ()=>{
+      const add = extraLines[Math.floor(Math.random()*extraLines.length)];
+      $("#mainLine").textContent = romanticLine(state.day, state.rel, state.from, state.to) + " " + add;
+      confetti({ particleCount: 120, spread: 85, origin: { y: 0.72 } });
+      modal("For You 💖", `<b>${state.to}</b><br><br>${add}<br><br><span style="opacity:.9">— ${state.from}</span>`);
+    });
+
+    // WhatsApp share (no popup)
+    $("#shareWaBtn").addEventListener("click", ()=> whatsappShare(shareLink, state));
+    $("#shareBtn2").addEventListener("click", ()=> whatsappShare(shareLink, state));
+
+    // Copy in stories
+    $("#copyBtn2").addEventListener("click", async ()=>{
+      try{
+        await navigator.clipboard.writeText(shareLink);
+        modal("Copied ✅", "Link copied from Stories section.");
+      }catch{
+        modal("Copy blocked", "Clipboard blocked. Use Generate Link in Customize.");
+      }
+    });
+
+    // QR toggle
+    function toggleQR(){
+      const area = $("#qrArea");
+      if (area.style.display === "none"){
+        area.style.display = "grid";
+        renderQR(shareLink);
+        modal("QR Code Ready 📷", "Scan the QR to open this page.");
+      } else {
+        area.style.display = "none";
+      }
+    }
+    $("#showQrBtn").addEventListener("click", toggleQR);
+    $("#qrBtn2").addEventListener("click", toggleQR);
+
+    // Open stories section
+    $("#openStories").addEventListener("click", ()=> $("#storiesSection").scrollIntoView({behavior:"smooth", block:"start"}));
+
+    // Music
+    const music = $("#bgMusic");
+    const mt = $("#musicToggle");
+    mt.addEventListener("click", async ()=>{
+      try{
+        if(music.paused){
+          await music.play();
+          mt.textContent = "Pause Music 🔇";
+        }else{
+          music.pause();
+          mt.textContent = "Play Music 🎵";
+        }
+      }catch{
+        modal("Audio blocked", "Mobile browsers sometimes block autoplay. Tap again, or paste your own MP3 URL in Customize → Song URL.");
+      }
+    });
+
+    // Close viewer with ESC
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && $("#storyViewer").style.display === "block"){
+        closeStoryViewer();
+      }
+    });
+  </script>
+</body>
+</html>
